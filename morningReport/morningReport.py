@@ -1,7 +1,11 @@
+from dotenv import load_dotenv
 import os
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
+
+dotenv_path = "C:\work\myProject\morningReport\webhook.env"
+load_dotenv(dotenv_path)
 
 # yahoo路線情報（首都圏）
 train_url = "https://transit.yahoo.co.jp/traininfo/area/4/"
@@ -30,8 +34,8 @@ def get_weather():
         res = requests.get(weather_url, timeout=10)
         res.raise_for_status()
         data = res.json()
-        description = data["weathet"][0]["description"]
-        temp = ["main"]["temp"]
+        description = data["weather"][0]["description"]
+        temp = data["main"]["temp"]
         return f"🌤 今日の天気: {description}, 気温: {temp}℃"
     except Exception as e:
         return f"❌ 天気情報取得エラー: {e}"
