@@ -1,6 +1,7 @@
 name: Morning Report
 
 on:
+<<<<<<< HEAD
   schedule:
     - cron: '0 23 * * *'  # 毎日UTC23時（JST8時）
   workflow_dispatch:
@@ -23,3 +24,25 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: python morningReport/morningReport.py
+=======
+ schedule:
+  - cron: '0 23 * * *' # 毎日UTC23時（JST8時）
+ workflow_dispatch:
+
+jobs:
+ notify:
+  runs-on: ubuntu-latest
+  steps:
+   - uses: action/checkout@v3
+
+   - name: Set Up Python
+     uses: actions/setup-python@v4
+     with:
+      python-version: '3.10'
+   - name: Install dependencies
+     run: pip install -r morningReport/requirements.txt
+   - name: Run script
+     env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+     run: python morningReport/morningReport.py
+>>>>>>> 6ae604d (morningReport フォルダを追加（Webhook削除済み）)

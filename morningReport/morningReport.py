@@ -34,8 +34,13 @@ def get_weather():
         res = requests.get(weather_url, timeout=10)
         res.raise_for_status()
         data = res.json()
+<<<<<<< HEAD
         description = data["weather"][0]["description"]
         temp = data["main"]["temp"]
+=======
+        description = data["weathet"][0]["description"]
+        temp = ["main"]["temp"]
+>>>>>>> 6ae604d (morningReport フォルダを追加（Webhook削除済み）)
         return f"🌤 今日の天気: {description}, 気温: {temp}℃"
     except Exception as e:
         return f"❌ 天気情報取得エラー: {e}"
