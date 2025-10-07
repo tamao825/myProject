@@ -2,7 +2,10 @@ from dotenv import load_dotenv
 import os
 import requests
 from bs4 import BeautifulSoup
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
+
+JST = timezone(timedelta(hours=9))
+now = datetime.now(JST).strftime("%Y-%m-%d %H:%M")
 
 dotenv_path = "C:\work\myProject\morningReport\webhook.env"
 load_dotenv(dotenv_path)
@@ -103,7 +106,6 @@ def send_slack(message: str):
         print(f"Slack送信エラー: {e}")
 
 def main():
-    now = datetime.now().strftime("%Y-%m-%d %H:%M")
     status = get_train_status()
     # Slack通知用メッセージ作成
     report = f"📢 {now} 時点の運行情報\n{status}"
@@ -114,7 +116,6 @@ if __name__ == "__main__":
     main()
 
 def lambda_handler(event, context):
-    now = datetime.now().strftime("%Y-%m-%d %H:%M")
     status = get_train_status()
     # Slack通知用メッセージ作成
     report = f"📢 {now} 時点の運行情報\n{status}"
