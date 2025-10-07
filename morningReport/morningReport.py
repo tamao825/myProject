@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta, timezone
 
 JST = timezone(timedelta(hours=9))
-now = datetime.now(JST).strftime("%Y-%m-%d %H:%M")
+
 
 dotenv_path = "C:\work\myProject\morningReport\webhook.env"
 load_dotenv(dotenv_path)
@@ -30,6 +30,10 @@ base_url = "https://transit.yahoo.co.jp"  # 相対パスを補完するベース
 api_key = "6f060865f0f7460788ee15894a47ea2b"
 city_name = "Tokyo"
 
+def get_now():
+    """現在時刻を JST で返す"""
+    return datetime.now(JST).strftime("%Y-%m-%d %H:%M")
+
 def get_weather():
     # OpenWeatherMapのURL
     weather_url = f"https://api.openweathermap.org/data/2.5/weather?q={city_name}&units=metric&appid={api_key}"
@@ -37,10 +41,6 @@ def get_weather():
         res = requests.get(weather_url, timeout=10)
         res.raise_for_status()
         data = res.json()
-        description = data["weather"][0]["description"]
-        temp = data["main"]["temp"]
-        description = data["weathet"][0]["description"]
-        temp = ["main"]["temp"]
         description = data["weather"][0]["description"]
         temp = data["main"]["temp"]
         return f"🌤 今日の天気: {description}, 気温: {temp}℃"
@@ -105,10 +105,16 @@ def send_slack(message: str):
     except requests.exceptions.RequestException as e:
         print(f"Slack送信エラー: {e}")
 
+def create_report():
+    """運行情報と天気をまとめたメッセージを作成"""
+    now = get_now()
+    train_status = get_train_status()
+    weather = get_weather()
+    report =  f"📢 {now} 時点の運行情報\n{train_status}\n\n{weather}"
+    return report
+
 def main():
-    status = get_train_status()
-    # Slack通知用メッセージ作成
-    report = f"📢 {now} 時点の運行情報\n{status}"
+    report = create_report()
     print(report)
     send_slack(report)
 
@@ -116,8 +122,6 @@ if __name__ == "__main__":
     main()
 
 def lambda_handler(event, context):
-    status = get_train_status()
-    # Slack通知用メッセージ作成
-    report = f"📢 {now} 時点の運行情報\n{status}"
+    report = create_report()
     send_slack(report)
     return {"status": "ok"}
